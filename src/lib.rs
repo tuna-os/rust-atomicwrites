@@ -289,6 +289,37 @@ mod imp {
     }
 }
 
+// Targets that are neither unix nor windows have no platform implementation
+// here, so `imp` does not resolve at all and the crate fails to compile. The
+// most visible case is `wasm32-unknown-unknown`, where a dependent that never
+// touches the filesystem still cannot be built.
+//
+// This arm keeps the crate compiling there by falling back to `std::fs`. It is
+// deliberately not advertised as atomic: `std::fs::rename` gives whatever the
+// platform gives, and `move_atomic` cannot avoid a TOCTOU window without a
+// platform primitive to do the check and the rename together. On wasm every
+// call fails at runtime anyway, because there is no filesystem to rename on.
+#[cfg(not(any(unix, windows)))]
+mod imp {
+    use std::{fs, io, path};
+
+    pub fn replace_atomic(src: &path::Path, dst: &path::Path) -> io::Result<()> {
+        fs::rename(src, dst)
+    }
+
+    pub fn move_atomic(src: &path::Path, dst: &path::Path) -> io::Result<()> {
+        // Best effort at "fail if dst exists". Not race-free, unlike the unix
+        // and windows arms, which get it from renameat/MoveFileEx.
+        if dst.exists() {
+            return Err(io::Error::new(
+                io::ErrorKind::AlreadyExists,
+                "destination already exists",
+            ));
+        }
+        fs::rename(src, dst)
+    }
+}
+
 #[cfg(windows)]
 mod imp {
     extern crate windows_sys;
