@@ -333,6 +333,25 @@ mod imp {
     }
 }
 
+#[cfg(not(any(unix, windows)))]
+mod imp {
+    use std::{io, path};
+
+    pub fn replace_atomic(src: &path::Path, dst: &path::Path) -> io::Result<()> {
+        std::fs::rename(src, dst)
+    }
+
+    pub fn move_atomic(src: &path::Path, dst: &path::Path) -> io::Result<()> {
+        if dst.exists() {
+            return Err(io::Error::new(
+                io::ErrorKind::AlreadyExists,
+                "destination file already exists",
+            ));
+        }
+        std::fs::rename(src, dst)
+    }
+}
+
 /// Move `src` to `dst`. If `dst` exists, it will be silently overwritten.
 ///
 /// Both paths must reside on the same filesystem for the operation to be atomic.
