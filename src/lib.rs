@@ -297,8 +297,13 @@ mod imp {
 // This arm keeps the crate compiling there by falling back to `std::fs`. It is
 // deliberately not advertised as atomic: `std::fs::rename` gives whatever the
 // platform gives, and `move_atomic` cannot avoid a TOCTOU window without a
-// platform primitive to do the check and the rename together. On wasm every
-// call fails at runtime anyway, because there is no filesystem to rename on.
+// platform primitive to do the check and the rename together.
+//
+// What a call does at runtime depends on the target. On
+// `wasm32-unknown-unknown` std has no filesystem, so every call returns an
+// `Unsupported` error. WASI targets (`wasm32-wasip1` and later) are not
+// `unix` either and land here too, but there the host may grant filesystem
+// access, so the calls can succeed with the best-effort semantics above.
 #[cfg(not(any(unix, windows)))]
 mod imp {
     use std::{fs, io, path};
