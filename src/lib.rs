@@ -101,16 +101,40 @@ impl AtomicFile {
 
     /// Like `AtomicFile::new`, but the temporary file is written to a temporary subdirectory in `tmpdir`.
     ///
-    /// TODO: does `tmpdir` have to exist?
+    /// # Arguments
+    ///
+    /// * `path` - The final destination file path
+    /// * `overwrite` - Whether to allow overwriting existing files
+    /// * `tmpdir` - An existing directory where temporary files will be created. Must be on the same
+    ///   filesystem as `path` for atomic move operations to succeed. This directory itself is not
+    ///   modified; temporary subdirectories are created within it.
+    ///
+    /// # Panics
+    ///
+    /// Panics if `tmpdir` does not exist or is not a directory.
     pub fn new_with_tmpdir<P, Q>(path: P, overwrite: OverwriteBehavior, tmpdir: Q) -> Self
     where
         P: AsRef<path::Path>,
         Q: AsRef<path::Path>,
     {
+        let tmpdir_path = tmpdir.as_ref();
+        
+        // Validate that tmpdir exists and is a directory
+        match tmpdir_path.metadata() {
+            Ok(metadata) => {
+                if !metadata.is_dir() {
+                    panic!("tmpdir must be a directory, got: {:?}", tmpdir_path);
+                }
+            }
+            Err(e) => {
+                panic!("tmpdir does not exist or cannot be accessed ({:?}): {}", tmpdir_path, e);
+            }
+        }
+        
         AtomicFile {
             path: path.as_ref().to_path_buf(),
             overwrite,
-            tmpdir: tmpdir.as_ref().to_path_buf(),
+            tmpdir: tmpdir_path.to_path_buf(),
         }
     }
 
