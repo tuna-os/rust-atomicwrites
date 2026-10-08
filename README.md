@@ -4,7 +4,7 @@
 [![Windows Build Status](https://ci.appveyor.com/api/projects/status/h6642x2d54xl0sev?svg=true)](https://ci.appveyor.com/project/untitaker/rust-atomicwrites)
 
 - [Documentation](https://docs.rs/crate/atomicwrites)
-- [Repository](https://github.com/untitaker/rust-atomicwrites)
+- [Repository](https://github.com/tuna-os/rust-atomicwrites)
 - [crates.io](https://crates.io/crates/atomicwrites)
 
 Atomic file-writes. Works on both POSIX and Windows.
@@ -37,3 +37,14 @@ af.write(|f| {
 ## License
 
 Licensed under MIT, see ``LICENSE``.
+
+## Contributing
+
+For local development steps, testing, and commit guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+<!-- hive-contribute-plea: donated-compute appeal, keep in sync across repos -->
+## Contribute compute — no code needed
+
+No time to write code? You can still push this project's backlog forward. A TunaOS AI-agent hive works on this repository. Lend the hive your AI subscription or API tokens, and your machine runs contributor tasks from this project's backlog.
+
+- 🪸 [Contribute compute to the reef hive](https://reef.tunaos.org/contribute)
