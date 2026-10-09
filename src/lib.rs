@@ -101,7 +101,14 @@ impl AtomicFile {
 
     /// Like `AtomicFile::new`, but the temporary file is written to a temporary subdirectory in `tmpdir`.
     ///
-    /// TODO: does `tmpdir` have to exist?
+    /// `tmpdir` is not required to exist when this constructor is called: no
+    /// filesystem access happens here. It is only read when [`AtomicFile::write`]
+    /// (or [`AtomicFile::write_with_options`]) is called, at which point a
+    /// missing or inaccessible `tmpdir` surfaces as a normal `Error::Internal`
+    /// I/O error from that call, not as a panic.
+    ///
+    /// `tmpdir` must be on the same filesystem as `path` for the final move
+    /// to be atomic.
     pub fn new_with_tmpdir<P, Q>(path: P, overwrite: OverwriteBehavior, tmpdir: Q) -> Self
     where
         P: AsRef<path::Path>,
