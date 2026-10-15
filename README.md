@@ -1,11 +1,11 @@
 # rust-atomicwrites
 
-[![Build Status](https://github.com/untitaker/rust-atomicwrites/actions/workflows/msrv.yml/badge.svg)](https://github.com/untitaker/rust-atomicwrites/actions)
-[![Windows Build Status](https://ci.appveyor.com/api/projects/status/h6642x2d54xl0sev?svg=true)](https://ci.appveyor.com/project/untitaker/rust-atomicwrites)
+[![Build Status](https://github.com/tuna-os/rust-atomicwrites/actions/workflows/msrv.yml/badge.svg)](https://github.com/tuna-os/rust-atomicwrites/actions)
 
 - [Documentation](https://docs.rs/crate/atomicwrites)
-- [Repository](https://github.com/untitaker/rust-atomicwrites)
+- [Repository](https://github.com/tuna-os/rust-atomicwrites)
 - [crates.io](https://crates.io/crates/atomicwrites)
+- [Upstream](https://github.com/untitaker/rust-atomicwrites) (original project by Markus Unterwaditzer)
 
 Atomic file-writes. Works on both POSIX and Windows.
 
