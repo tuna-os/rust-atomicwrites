@@ -2,6 +2,7 @@
 name = "atomicwrites"
 version = "0.4.4"
 edition = "2015"
+rust-version = "1.63"
 
 authors = ["Markus Unterwaditzer <markus-honeypot@unterwaditzer.net>"]
 license = "MIT"
@@ -17,9 +18,16 @@ repository = "https://github.com/tuna-os/rust-atomicwrites"
 exclude = ["/Makefile", "/appveyor.yml"]
 
 [dependencies]
-tempfile = "3.1"
+# These direct bounds constrain versions selected transitively by Cargo 1.63:
+# tempfile >=3.18 pulls rustix 1.0, which can resolve past its MSRV, and
+# newer tempfile/fastrand releases pull getrandom 0.4 (edition 2024).
+# libc >=0.2.184 and once_cell >=1.21 require rustc 1.65.
+fastrand = ">=2.1.1, <2.5.0"
+once_cell = ">=1.19.0, <1.21.0"
+tempfile = ">=3.1, <3.18.0"
 
 [target.'cfg(unix)'.dependencies]
+libc = ">=0.2.0, <0.2.184"
 rustix = { version = "0.38.0", features = ["fs"] }
 
 [target.'cfg(windows)'.dependencies.windows-sys]
