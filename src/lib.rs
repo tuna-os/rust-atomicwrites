@@ -183,11 +183,7 @@ mod imp {
     use rustix::fs::AtFlags;
     use std::{ffi::OsStr, fs, io, path};
 
-    fn with_parent_dirs<T, F>(
-        src: &path::Path,
-        dst: &path::Path,
-        f: F,
-    ) -> io::Result<T>
+    fn with_parent_dirs<T, F>(src: &path::Path, dst: &path::Path, f: F) -> io::Result<T>
     where
         F: FnOnce(&fs::File, &fs::File, &OsStr, &OsStr, bool) -> io::Result<T>,
     {
@@ -266,14 +262,9 @@ mod imp {
                             RenameFlags::NOREPLACE,
                         ) {
                             Ok(()) => {
-                                return sync_parent_dirs(
-                                    src_parent,
-                                    dst_parent,
-                                    same_parent,
-                                );
+                                return sync_parent_dirs(src_parent, dst_parent, same_parent);
                             }
-                            Err(rustix::io::Errno::INVAL)
-                            | Err(rustix::io::Errno::NOSYS) => {
+                            Err(rustix::io::Errno::INVAL) | Err(rustix::io::Errno::NOSYS) => {
                                 // `NOSYS` means the OS doesn't support `renameat2`;
                                 // remember this so that we don't bother calling it
                                 // again.
