@@ -6,10 +6,14 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+permissions: {}
+
 jobs:
   check:
     name: Check
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       matrix:
         rust:
@@ -20,24 +24,26 @@ jobs:
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.8.0
+        with:
+          persist-credentials: false
 
       - name: Install toolchain
-        uses: actions-rs/toolchain@v1
+        uses: actions-rs/toolchain@v1.0.7 # zizmor: ignore[archived-uses] replacing actions-rs would change the toolchain setup; kept as upstream has it
         with:
           toolchain: ${{ matrix.rust }}
           override: true
 
       - name: Run cargo check
         if: matrix.rust != 'nightly'
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/cargo@v1.0.3 # zizmor: ignore[archived-uses] replacing actions-rs would change how cargo runs; kept as upstream has it
         with:
           command: check
 
       - name: Run cargo check (nightly)
         if: matrix.rust == 'nightly'
         continue-on-error: true
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/cargo@v1.0.3 # zizmor: ignore[archived-uses] replacing actions-rs would change how cargo runs; kept as upstream has it
         with:
           command: check
 
@@ -45,6 +51,8 @@ jobs:
     needs: [check]
     name: Test Suite
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       matrix:
         rust:
@@ -54,24 +62,26 @@ jobs:
           - nightly
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.8.0
+        with:
+          persist-credentials: false
 
       - name: Install toolchain
-        uses: actions-rs/toolchain@v1
+        uses: actions-rs/toolchain@v1.0.7 # zizmor: ignore[archived-uses] replacing actions-rs would change the toolchain setup; kept as upstream has it
         with:
           toolchain: ${{ matrix.rust }}
           override: true
 
       - name: Run cargo test
         if: matrix.rust != 'nightly'
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/cargo@v1.0.3 # zizmor: ignore[archived-uses] replacing actions-rs would change how cargo runs; kept as upstream has it
         with:
           command: test
 
       - name: Run cargo test (nightly)
         if: matrix.rust == 'nightly'
         continue-on-error: true
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/cargo@v1.0.3 # zizmor: ignore[archived-uses] replacing actions-rs would change how cargo runs; kept as upstream has it
         with:
           command: test
 
@@ -79,6 +89,8 @@ jobs:
     needs: [check]
     name: Rustfmt
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       matrix:
         rust:
@@ -86,10 +98,12 @@ jobs:
           - beta
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.8.0
+        with:
+          persist-credentials: false
 
       - name: Install toolchain
-        uses: actions-rs/toolchain@v1
+        uses: actions-rs/toolchain@v1.0.7 # zizmor: ignore[archived-uses] replacing actions-rs would change the toolchain setup; kept as upstream has it
         with:
           toolchain: ${{ matrix.rust }}
           override: true
@@ -98,7 +112,7 @@ jobs:
         run: rustup component add rustfmt
 
       - name: Run cargo fmt
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/cargo@v1.0.3 # zizmor: ignore[archived-uses] replacing actions-rs would change how cargo runs; kept as upstream has it
         with:
           command: fmt
           args: --all -- --check
@@ -107,6 +121,8 @@ jobs:
     needs: [check]
     name: Clippy
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     strategy:
       matrix:
         rust:
@@ -115,10 +131,12 @@ jobs:
           - nightly
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.8.0
+        with:
+          persist-credentials: false
 
       - name: Install toolchain
-        uses: actions-rs/toolchain@v1
+        uses: actions-rs/toolchain@v1.0.7 # zizmor: ignore[archived-uses] replacing actions-rs would change the toolchain setup; kept as upstream has it
         with:
           toolchain: ${{ matrix.rust }}
           override: true
@@ -127,7 +145,7 @@ jobs:
         run: rustup component add clippy
 
       - name: Run cargo clippy
-        uses: actions-rs/cargo@v1
+        uses: actions-rs/cargo@v1.0.3 # zizmor: ignore[archived-uses] replacing actions-rs would change how cargo runs; kept as upstream has it
         with:
           command: clippy
           args: -- -D warnings
