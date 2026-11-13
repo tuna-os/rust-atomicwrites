@@ -34,6 +34,16 @@ jobs:
           toolchain: ${{ matrix.rust }}
           override: true
 
+      # Cargo 1.63 resolves the newest dependencies, which need a newer
+      # rustc. Cargo.toml declares rust-version, so stable cargo's MSRV-aware
+      # resolver writes a lockfile that 1.63 can build. Cargo.toml keeps no
+      # upper bounds: those would stop downstream graphs from unifying.
+      - name: Resolve dependencies for the MSRV
+        if: matrix.rust == '1.63.0'
+        env:
+          CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS: fallback
+        run: cargo +stable generate-lockfile
+
       - name: Run cargo check
         if: matrix.rust != 'nightly'
         uses: actions-rs/cargo@v1.0.3 # zizmor: ignore[archived-uses] replacing actions-rs would change how cargo runs; kept as upstream has it
@@ -71,6 +81,12 @@ jobs:
         with:
           toolchain: ${{ matrix.rust }}
           override: true
+
+      - name: Resolve dependencies for the MSRV
+        if: matrix.rust == '1.63.0'
+        env:
+          CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS: fallback
+        run: cargo +stable generate-lockfile
 
       - name: Run cargo test
         if: matrix.rust != 'nightly'
